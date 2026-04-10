@@ -1,4 +1,7 @@
+using System.ComponentModel;
+using System.Data;
 using System.Data.Common;
+using System.Net.Security;
 using System.Security.Principal;
 using Microsoft.VisualBasic;
 
@@ -6,6 +9,19 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 // app.MapGet("/", () => "Привет от ИСП-233! Автор: <Селиванов Беляев>");
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"[LOG] {context.Request.Method} {context.Request.Path}");
+    await next(context);
+    Console.WriteLine($"[LOG] Ответ отправлен: {context.Response.StatusCode}");
+});
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Powered-By", "ASP.NET Core Lab27");
+    await next(context);
+});
 
 app.MapGet("/", () => "Добро пожаловать на сервер!");
 
